@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE user_subscription (
+CREATE TABLE user_subscriptions (
   id UUID,
   user_id UUID NOT NULL,
   service_name TEXT NOT NULL,
