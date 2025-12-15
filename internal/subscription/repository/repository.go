@@ -11,6 +11,8 @@ import (
 type Repository interface {
 	Create(ctx context.Context, sub *model.UserSubscription) error
 	GetByID(ctx context.Context, id uuid.UUID) (*model.UserSubscription, error)
+	GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error)
+	ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]model.UserSubscription, error)
 }
 
 type pgRepository struct {
@@ -29,4 +31,12 @@ func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*model.UserSu
 	sub, err := gorm.G[model.UserSubscription](r.db).Where("id = ?", id).First(ctx)
 	
 	return &sub, err
+}
+
+func (r *pgRepository) GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error) {
+	return gorm.G[model.UserSubscription](r.db).Find(ctx)
+}
+
+func (r *pgRepository) ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]model.UserSubscription, error) {
+	return gorm.G[model.UserSubscription](r.db).Where("user_id = ?", user_id).Find(ctx)
 }

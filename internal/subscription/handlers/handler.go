@@ -21,6 +21,8 @@ func NewRouter(h *Handler) *gin.Engine {
 	{
 		sub.POST("subscription/", h.CreateSubscription)
 		sub.GET("subscription/:id/", h.GetSubscriptionByID)
+		sub.GET("subscriptions/", h.GetAllSubscriptions)
+		sub.GET("subscriptions/:user_id/", h.GetUserSubscriptions)
 	}
 
 	return router
@@ -65,4 +67,33 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 			"subscription": sub,
 		})
 	}	
+}
+
+func (h *Handler) GetAllSubscriptions(c *gin.Context) {
+	if c.Request.Method == http.MethodGet {
+		subs, err := h.srv.GetAllSubscriptions(c.Request.Context())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"subscriptions": subs,
+		})
+	}
+}
+
+func (h *Handler) GetUserSubscriptions(c *gin.Context) {
+	if c.Request.Method == http.MethodGet {
+		user_id := c.Param("user_id")
+		uSubs, err := h.srv.GetUserSubscriptions(c.Request.Context(), user_id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"user_subs": uSubs,
+		})
+	}
 }

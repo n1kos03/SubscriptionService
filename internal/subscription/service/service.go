@@ -14,6 +14,8 @@ import (
 type Service interface {
 	CreateSubscription(ctx context.Context, sub *model.ServiceUserSubscription) (*model.UserSubscription, error)
 	GetSubscriptionByID(ctx context.Context, id string) (*model.UserSubscription, error)
+	GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error)
+	GetUserSubscriptions(ctx context.Context, user_id string) ([]model.UserSubscription, error)
 }
 
 type service struct {
@@ -71,4 +73,18 @@ func (s *service) GetSubscriptionByID(ctx context.Context, id string) (*model.Us
 	}
 
 	return s.rep.GetByID(ctx, uid)
+}
+
+func (s *service) GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error) {
+	return s.rep.GetAllSubscriptions(ctx)
+}
+
+func (s *service) GetUserSubscriptions(ctx context.Context, user_id string) ([]model.UserSubscription, error) {
+	uid, err := uuid.Parse(user_id) 
+	if err != nil {
+		s.log.Error("error while parsing user_id", "err", err)
+		return nil, err
+	}
+
+	return s.rep.ListUserSubs(ctx, uid)
 }
