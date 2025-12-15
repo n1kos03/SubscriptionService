@@ -10,7 +10,7 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, sub *model.UserSubscription) error
-	GetByID(ctx context.Context, id uuid.UUID) (*model.UserSubscription, error)
+	GetSubByID(ctx context.Context, id uuid.UUID) (*model.UserSubscription, error)
 	GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error)
 	ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]model.UserSubscription, error)
 }
@@ -27,16 +27,32 @@ func (r *pgRepository) Create(ctx context.Context, sub *model.UserSubscription) 
 	return r.db.WithContext(ctx).Create(sub).Error
 }
 
-func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*model.UserSubscription, error) {
-	sub, err := gorm.G[model.UserSubscription](r.db).Where("id = ?", id).First(ctx)
-	
-	return &sub, err
+func (r *pgRepository) GetSubByID(ctx context.Context, id uuid.UUID) (*model.UserSubscription, error) {
+	var sub model.UserSubscription
+	err := r.db.WithContext(ctx).Model(&model.UserSubscription{}).First(&sub, "id = ?", id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
 }
 
 func (r *pgRepository) GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error) {
-	return gorm.G[model.UserSubscription](r.db).Find(ctx)
+	var subs []model.UserSubscription
+	err := r.db.WithContext(ctx).Model(&model.UserSubscription{}).Find(&subs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return subs, nil
 }
 
 func (r *pgRepository) ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]model.UserSubscription, error) {
-	return gorm.G[model.UserSubscription](r.db).Where("user_id = ?", user_id).Find(ctx)
+	var subs []model.UserSubscription
+	err := r.db.WithContext(ctx).Model(&model.UserSubscription{}).Where("user_id = ?", user_id).Find(&subs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return subs, nil
 }

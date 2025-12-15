@@ -72,7 +72,7 @@ func (s *service) GetSubscriptionByID(ctx context.Context, id string) (*model.Us
 		return nil, err
 	}
 
-	return s.rep.GetByID(ctx, uid)
+	return s.rep.GetSubByID(ctx, uid)
 }
 
 func (s *service) GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error) {
