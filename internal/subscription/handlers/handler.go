@@ -20,6 +20,7 @@ func NewRouter(h *Handler) *gin.Engine {
 	sub := router.Group("/")
 	{
 		sub.POST("subscription/", h.CreateSubscription)
+		sub.GET("subscription/:id/", h.GetSubscriptionByID)
 	}
 
 	return router
@@ -40,7 +41,7 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 		createdSub, err := h.srv.CreateSubscription(c.Request.Context(), &sub); 
 		if err != nil {
 			h.log.Error("error while creating subscription", "err", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
 
@@ -48,4 +49,20 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 			"id": createdSub.ID.String(),
 		})
 	}
+}
+
+func (h *Handler) GetSubscriptionByID(c *gin.Context) {
+	if c.Request.Method == http.MethodGet {
+		id := c.Param("id")
+
+		sub, err := h.srv.GetSubscriptionByID(c.Request.Context(), id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"subscription": sub,
+		})
+	}	
 }
