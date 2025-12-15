@@ -23,6 +23,7 @@ func NewRouter(h *Handler) *gin.Engine {
 		sub.GET("subscription/:id/", h.GetSubscriptionByID)
 		sub.GET("subscriptions/", h.GetAllSubscriptions)
 		sub.GET("subscriptions/:user_id/", h.GetUserSubscriptions)
+		sub.DELETE("subscription/:id/", h.DeleteSubscription)
 	}
 
 	return router
@@ -95,5 +96,18 @@ func (h *Handler) GetUserSubscriptions(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"user_subs": uSubs,
 		})
+	}
+}
+
+func (h *Handler) DeleteSubscription(c *gin.Context) {
+	if c.Request.Method == http.MethodDelete {
+		id := c.Param("id")
+		err := h.srv.DeleteSubscription(c.Request.Context(), id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Subscription succefully deleted"})
 	}
 }

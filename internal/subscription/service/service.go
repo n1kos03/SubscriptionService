@@ -16,6 +16,7 @@ type Service interface {
 	GetSubscriptionByID(ctx context.Context, id string) (*model.UserSubscription, error)
 	GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error)
 	GetUserSubscriptions(ctx context.Context, user_id string) ([]model.UserSubscription, error)
+	DeleteSubscription(ctx context.Context, id string) error
 }
 
 type service struct {
@@ -87,4 +88,14 @@ func (s *service) GetUserSubscriptions(ctx context.Context, user_id string) ([]m
 	}
 
 	return s.rep.ListUserSubs(ctx, uid)
+}
+
+func (s *service) DeleteSubscription(ctx context.Context, id string) error {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		s.log.Error("error while parsing id", "err", err)
+		return err
+	}
+
+	return s.rep.Delete(ctx, uid)
 }
