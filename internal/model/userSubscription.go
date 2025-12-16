@@ -7,32 +7,31 @@ import (
 )
 
 type UserSubscription struct {
-	ID          uuid.UUID `json:"id"`
-	UserId      uuid.UUID `json:"user_id"`
-	ServiceName string    `json:"service_name"`
-	Price       int       `json:"price"`
-	StartDate   time.Time `json:"start_date"`
+	ID          uuid.UUID `json:"id" example:"7639ca88-80df-4d91-ae20-78ac3431ee11"`
+	UserId      uuid.UUID `json:"user_id" example:"7639ca88-80df-4d91-ae20-78ac3431ee11"`
+	ServiceName string    `json:"service_name" example:"Yandex Plus"`
+	Price       int       `json:"price" example:"400"`
+	StartDate   time.Time `json:"start_date" example:"07-2025"`
 }
 
-
 type ServiceUserSubscription struct {
-	UserID string	`json:"user_id"`
-	ServiceName string `json:"service_name"`
-	Price int `json:"price"`
-	StartDate string `json:"start_date"`
+	UserID      string `json:"user_id" example:"7639ca88-80df-4d91-ae20-78ac3431ee11"`
+	ServiceName string `json:"service_name" example:"Yandex Plus"`
+	Price       int    `json:"price" example:"400"`
+	StartDate   string `json:"start_date" example:"07-2025"`
 }
 
 type ServiceUpdateUserSubscription struct {
-	ID          string `json:"id"`
-	UserId      string `json:"user_id"`
-	ServiceName *string    `json:"service_name"`
-	Price       *int       `json:"price"`
-	StartDate   *string `json:"start_date"`
+	ID          string  `json:"id" example:"7639ca88-80df-4d91-ae20-78ac3431ee11"`
+	UserId      string  `json:"user_id" example:"7639ca88-80df-4d91-ae20-78ac3431ee11"`
+	ServiceName *string `json:"service_name" example:"Yandex Plus"`
+	Price       *int    `json:"price" example:"400"`
+	StartDate   *string `json:"start_date" example:"07-2025"`
 }
 
 type SummarySubData struct {
-	UserID *string `json:"user_id"`
+	UserID      *string `json:"user_id"`
 	ServiceName *string `json:"service_name"`
-	StartDate string `json:"start_date"`
-	EndDate string `json:"end_date"`
+	StartDate   string  `json:"start_date"`
+	EndDate     string  `json:"end_date"`
 }

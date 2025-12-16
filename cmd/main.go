@@ -11,6 +11,11 @@ import (
 	"log/slog"
 )
 
+// @title Subscription service API
+// @version 1.0
+// @description REST API for managing subscriptions
+// @host localhost:8080
+// @BasePath /
 func main() {
 	logger := pkg.SetupLogger()
 

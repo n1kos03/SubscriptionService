@@ -24,7 +24,7 @@ func RunMigrations(db *database.Database) {
 		log.Println("Error on setup dialect for migrations: ", err)
 		return
 	}
-	
+
 	if err := goose.Up(sqlDB, "sql"); err != nil {
 		log.Println("Error while applying migrations: ", err)
 		return

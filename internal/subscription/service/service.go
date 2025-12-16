@@ -52,11 +52,11 @@ func (s *service) CreateSubscription(ctx context.Context, sub *model.ServiceUser
 	s.log.Info("Creating subscription", "user_id", sub.UserID, "service", sub.ServiceName)
 
 	newSub := &model.UserSubscription{
-		ID: uuid.New(),
-		UserId: uid,
+		ID:          uuid.New(),
+		UserId:      uid,
 		ServiceName: sub.ServiceName,
-		Price: sub.Price,
-		StartDate: date,
+		Price:       sub.Price,
+		StartDate:   date,
 	}
 
 	err = s.rep.Create(ctx, newSub)
@@ -83,7 +83,7 @@ func (s *service) GetAllSubscriptions(ctx context.Context) ([]model.UserSubscrip
 }
 
 func (s *service) GetUserSubscriptions(ctx context.Context, user_id string) ([]model.UserSubscription, error) {
-	uid, err := uuid.Parse(user_id) 
+	uid, err := uuid.Parse(user_id)
 	if err != nil {
 		s.log.Error("error while parsing user_id", "err", err)
 		return nil, err
@@ -104,7 +104,7 @@ func (s *service) DeleteSubscription(ctx context.Context, id string) error {
 
 func (s *service) UpdateSubscription(ctx context.Context, sub *model.ServiceUpdateUserSubscription) error {
 	var uSub model.UserSubscription
-	
+
 	id, err := uuid.Parse(sub.ID)
 	if err != nil {
 		s.log.Error("error while parsing id", "err", err)
@@ -138,11 +138,11 @@ func (s *service) UpdateSubscription(ctx context.Context, sub *model.ServiceUpda
 	return s.rep.Update(ctx, &uSub)
 }
 
-func (s *service) SummuryPriceSub(ctx context.Context, subInfo model.SummarySubData) (int, error) {	
-	if (subInfo.UserID == nil || *subInfo.UserID == "" ) && (subInfo.ServiceName == nil || *subInfo.ServiceName == "") {
+func (s *service) SummuryPriceSub(ctx context.Context, subInfo model.SummarySubData) (int, error) {
+	if (subInfo.UserID == nil || *subInfo.UserID == "") && (subInfo.ServiceName == nil || *subInfo.ServiceName == "") {
 		return 0, errors.New("user_id or service name must be specified")
 	}
-	
+
 	var uid *uuid.UUID
 	if subInfo.UserID != nil && *subInfo.UserID != "" {
 		tmp, err := uuid.Parse(*subInfo.UserID)
@@ -158,7 +158,7 @@ func (s *service) SummuryPriceSub(ctx context.Context, subInfo model.SummarySubD
 	if err != nil {
 		s.log.Error("error while parsing start date of subscription", "err", err)
 		return 0, err
-	}	
+	}
 
 	endDate, err := pkg.ParseDate(subInfo.EndDate)
 	if err != nil {
