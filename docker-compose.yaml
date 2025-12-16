@@ -23,5 +23,17 @@ services:
     ports:
       - "8085:8080"
 
+  subscription_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - env/db.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
 volumes:
   db-data:
