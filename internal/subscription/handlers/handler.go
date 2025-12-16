@@ -24,6 +24,7 @@ func NewRouter(h *Handler) *gin.Engine {
 		sub.GET("subscriptions/", h.GetAllSubscriptions)
 		sub.GET("subscriptions/:user_id/", h.GetUserSubscriptions)
 		sub.DELETE("subscription/:id/", h.DeleteSubscription)
+		sub.PATCH("subscription/", h.UpdateSubscription)
 	}
 
 	return router
@@ -109,5 +110,25 @@ func (h *Handler) DeleteSubscription(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "Subscription succefully deleted"})
+	}
+}
+
+func (h *Handler) UpdateSubscription(c *gin.Context) {
+	if c.Request.Method == http.MethodPatch {
+		var uSub model.ServiceUpdateUserSubscription
+		if err := c.ShouldBindBodyWithJSON(&uSub); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+		
+		if err := h.srv.UpdateSubscription(c.Request.Context(), &uSub); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		// Must be replased on answer with sub data
+		c.JSON(http.StatusOK, gin.H{"message": "Subscription succefully updated",
+			"updated subscription": uSub,
+		})
 	}
 }

@@ -14,6 +14,7 @@ type Repository interface {
 	GetAllSubscriptions(ctx context.Context) ([]model.UserSubscription, error)
 	ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]model.UserSubscription, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, sub *model.UserSubscription) error
 }
 
 type pgRepository struct {
@@ -60,4 +61,13 @@ func (r *pgRepository) ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]m
 
 func (r *pgRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Delete(&model.UserSubscription{}, "id = ?", id).Error
+}
+
+func (r *pgRepository) Update(ctx context.Context, sub *model.UserSubscription) error {
+	err := r.db.WithContext(ctx).Model(&model.UserSubscription{}).Where("id = ?", sub.ID).Updates(sub).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

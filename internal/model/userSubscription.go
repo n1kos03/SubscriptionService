@@ -21,3 +21,11 @@ type ServiceUserSubscription struct {
 	Price int `json:"price"`
 	StartDate string `json:"start_date"`
 }
+
+type ServiceUpdateUserSubscription struct {
+	ID          string `json:"id"`
+	UserId      string `json:"user_id"`
+	ServiceName *string    `json:"service_name"`
+	Price       *int       `json:"price"`
+	StartDate   *string `json:"start_date"`
+}
