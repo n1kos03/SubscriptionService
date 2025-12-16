@@ -18,6 +18,7 @@ type Service interface {
 	GetUserSubscriptions(ctx context.Context, user_id string) ([]model.UserSubscription, error)
 	DeleteSubscription(ctx context.Context, id string) error
 	UpdateSubscription(ctx context.Context, sub *model.ServiceUpdateUserSubscription) error
+	SummuryPriceSub(ctx context.Context, subInfo model.SummarySubData) (int, error)
 }
 
 type service struct {
@@ -134,7 +135,42 @@ func (s *service) UpdateSubscription(ctx context.Context, sub *model.ServiceUpda
 		}
 	}
 
-	// uSub.StartDate, _ = time.Parse(time.RFC3339, *sub.StartDate)
-
 	return s.rep.Update(ctx, &uSub)
+}
+
+func (s *service) SummuryPriceSub(ctx context.Context, subInfo model.SummarySubData) (int, error) {	
+	if (subInfo.UserID == nil || *subInfo.UserID == "" ) && (subInfo.ServiceName == nil || *subInfo.ServiceName == "") {
+		return 0, errors.New("user_id or service name must be specified")
+	}
+	
+	var uid *uuid.UUID
+	if subInfo.UserID != nil && *subInfo.UserID != "" {
+		tmp, err := uuid.Parse(*subInfo.UserID)
+		if err != nil {
+			s.log.Error("error while parsing id", "err", err)
+			return 0, err
+		}
+
+		uid = &tmp
+	}
+
+	stDate, err := pkg.ParseDate(subInfo.StartDate)
+	if err != nil {
+		s.log.Error("error while parsing start date of subscription", "err", err)
+		return 0, err
+	}	
+
+	endDate, err := pkg.ParseDate(subInfo.EndDate)
+	if err != nil {
+		s.log.Error("error while parsing end date of subscription", "err", err)
+		return 0, err
+	}
+
+	total, err := s.rep.SummaryPriceSub(ctx, uid, subInfo.ServiceName, stDate, endDate)
+	if err != nil {
+		s.log.Error("error in reciewing summary for subscriptions", "err", err)
+		return 0, err
+	}
+
+	return total, nil
 }

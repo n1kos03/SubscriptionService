@@ -3,6 +3,7 @@ package repository
 import (
 	"SubscriptionService/internal/model"
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ type Repository interface {
 	ListUserSubs(ctx context.Context, user_id uuid.UUID) ([]model.UserSubscription, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, sub *model.UserSubscription) error
+	SummaryPriceSub(ctx context.Context, userID *uuid.UUID, serviceName *string, stDate, endDate time.Time) (int, error)
 }
 
 type pgRepository struct {
@@ -70,4 +72,29 @@ func (r *pgRepository) Update(ctx context.Context, sub *model.UserSubscription) 
 	}
 
 	return nil
+}
+
+func (r *pgRepository) SummaryPriceSub(ctx context.Context, userID *uuid.UUID, serviceName *string, stDate, endDate time.Time) (int, error) {
+	var total int
+
+	req := r.db.WithContext(ctx).Model(&model.UserSubscription{}).Select("COALESCE(SUM(price), 0)")
+
+	if userID != nil {
+		req.Where("user_id = ?", userID)
+	}
+
+	if serviceName != nil {
+		req.Where("service_name = ?", serviceName)
+	}
+
+	req = req.Where("start_date >= ? AND start_date <= ?",
+		stDate,
+		endDate,
+	)
+
+	if err := req.Scan(&total).Error; err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
